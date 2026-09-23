@@ -2,13 +2,15 @@
 
 **View any file as a bitmap of its bits — 1 byte = 8 pixels.**
 
-A tiny Windows tool for finding bitmap fonts embedded inside programs, firmware and ROM dumps — or for eyeballing any raw binary data. Think of it as a hex dump drawn as pixels: structure and patterns (especially glyphs) jump out visually instead of hiding in a wall of hex numbers.
+A tiny Windows & Linux tool for finding bitmap fonts embedded inside programs, firmware and ROM dumps — or for eyeballing any raw binary data. Think of it as a hex dump drawn as pixels: structure and patterns (especially glyphs) jump out visually instead of hiding in a wall of hex numbers.
 
 ![BitPlot rendering THAI.COM — a classic DOS-era Thai bitmap font (20,377 bytes) — glyph columns line up with the byte columns](docs/screenshot.png)
 
 ## Download
 
-Grab the prebuilt `BitPlot.exe` from [**Releases**](https://github.com/too101/bitplot/releases/latest) — it's a single portable file, no installation needed (Windows 8.1/10/11 have everything built in).
+**Windows:** grab the prebuilt `BitPlot.exe` from [**Releases**](https://github.com/too101/bitplot/releases/latest) — it's a single portable file, no installation needed (Windows 8.1/10/11 have everything built in).
+
+**Linux:** build from source with one command (see [Build](#build)) — at runtime it only needs libX11, which every desktop already has.
 
 ## How a file is drawn
 
@@ -49,30 +51,49 @@ Tips:
 ## Usage
 
 ```
-BitPlot.exe [file]
+BitPlot.exe [file]      # Windows
+./bitplot [file]        # Linux
 ```
 
-or drag & drop a file onto the window, or press `O` to open one.
+Windows: drag & drop a file onto the window, or press `O` to open one.
+Linux: press `O`, type a path, press `Enter`.
 
 | Key | Action |
 | --- | --- |
 | `O` | open a file |
 | `+` / `-` (or `Ctrl` + mouse wheel) | zoom point size |
-| mouse wheel | scroll left / right |
+| mouse wheel, `Left` / `Right` | scroll |
+| `Home` / `End` | jump to start / end (Linux) |
+
+### Linux
+
+Same plotting rules, same hover address readout:
+
+![BitPlot on Linux (X11) rendering font-demo.bin — the letters B I T P L O T](docs/screenshot-linux.png)
 
 ## Build
 
-No dependencies beyond Windows itself — any Windows 7–11 with .NET Framework 4.x (preinstalled) can build it from source with the compiler that already ships with Windows:
+**Windows** — no dependencies beyond Windows itself; any Windows 7–11 with .NET Framework 4.x (preinstalled) has the compiler already:
 
 ```
 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /nologo /target:winexe /out:BitPlot.exe BitPlot.cs
 ```
 
+**Linux** — a single-file C program using plain X11:
+
+```
+gcc -O2 -Wall -o bitplot bitplot.c -lX11      # or just: make
+```
+
+Building needs `gcc` and the X11 headers — Debian/Ubuntu: `sudo apt install build-essential libx11-dev`, Fedora: `sudo dnf install gcc libX11-devel`. At runtime only libX11 is required; it comes preinstalled on every desktop, and on Wayland the app runs through XWayland.
+
 ## Files
 
 | File | Description |
 | --- | --- |
-| `BitPlot.cs` | the whole program in one file (C# WinForms) |
+| `BitPlot.cs` | Windows build — the whole program in one file (C# WinForms) |
+| `bitplot.c` | Linux build — the whole program in one file (C, X11) |
+| `Makefile` | `make` builds the Linux binary |
 | `font-demo.bin` | hand-made 8×8 bitmap font spelling `BITPLOT` — open it and see the letters |
 | `test.bin` | the `00 01 02 03 04 …` example from above |
 
@@ -80,11 +101,11 @@ C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /nologo /target:winexe /
 
 ## ภาษาไทย
 
-**BitPlot** คือเครื่องมือเล็กๆ บน Windows สำหรับเปิดไฟล์อะไรก็ได้มาแสดงเป็นบิตแมป — **1 byte = 8 จุด** โดยไบต์จะเรียงลงมาทีละแถว พอถึงล่างสุดของหน้าต่างจะไหลขึ้นไปเริ่มที่บนสุดของคอลัมน์ถัดไป (เว้นช่องว่าง 1 จุด) เหมือนตัวอักษรไหลลงคอลัมน์หนังสือพิมพ์
+**BitPlot** คือเครื่องมือเล็กๆ บน Windows และ Linux สำหรับเปิดไฟล์อะไรก็ได้มาแสดงเป็นบิตแมป — **1 byte = 8 จุด** โดยไบต์จะเรียงลงมาทีละแถว พอถึงล่างสุดของหน้าต่างจะไหลขึ้นไปเริ่มที่บนสุดของคอลัมน์ถัดไป (เว้นช่องว่าง 1 จุด) เหมือนตัวอักษรไหลลงคอลัมน์หนังสือพิมพ์
 
 จุดประสงค์หลักคือใช้**ตามหาฟอนต์ bitmap ที่ฝังอยู่ในโปรแกรม เฟิร์มแวร์ หรือไฟล์เกม** หรือใช้ดูไฟล์ bitmap font โดยตรง เพราะฟอนต์ยุคคลาสสิก (8×8, 8×16) เก็บแต่ละแถวของ glyph เป็น 1 byte = 8 พิกเซล พอ plot ออกมาตัวอักษรจะอ่านได้ทันทีตามในภาพตัวอย่าง (ไฟล์ `THAI.COM` ฟอนต์ไทยยุค DOS)
 
 - ดาวน์โหลดโปรแกรมสำเร็จรูปได้ที่หน้า [Releases](https://github.com/too101/bitplot/releases/latest) (ไฟล์เดียว พกพาสะดวก ไม่ต้องติดตั้งอะไร)
 - เอาเมาส์ชี้จุดไหนก็จะบอก **address ของ byte นั้น (ฐาน 10 และฐาน 16)** เช่น `Address: 1234 (4D2H)`
-- `O` = เปิดไฟล์ (หรือลากไฟล์มาทิ้งในหน้าต่าง), `+` / `-` = ซูมขนาดจุด, ลูกกลิ้งเมาส์ = เลื่อนซ้ายขวา
-- เป็น C# WinForms ไฟล์เดียว ไม่มี dependency — คอมไพล์ด้วย `csc.exe` ที่มีในเครื่อง Windows อยู่แล้ว (ดูคำสั่งในหัวข้อ Build)
+- `O` = เปิดไฟล์ (Windows ลากไฟล์มาทิ้งก็ได้, Linux กด `O` แล้วพิมพ์ path), `+` / `-` = ซูมขนาดจุด, ลูกกลิ้งเมาส์ = เลื่อนซ้ายขวา
+- มีสองเวอร์ชัน: Windows (C# WinForms ไฟล์เดียว) และ Linux (C + X11 ไฟล์เดียว) — ไม่มี dependency ให้ติดตั้งเพิ่ม วิธี build อยู่ในหัวข้อ Build
