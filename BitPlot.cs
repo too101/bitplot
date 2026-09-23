@@ -60,6 +60,14 @@ class BitPlotForm : Form
     readonly Panel header;
     readonly PlotPanel plot;
     readonly HScrollBar hBar;
+    readonly Label zoomHint = new Label
+    {
+        Text = "[+][-] Zoom",
+        ForeColor = Color.DimGray,
+        BackColor = Color.White,
+        AutoSize = true,
+        Font = new Font("Consolas", 11f)
+    };
 
     long hoverByte = -1;                 // file offset of hovered byte, -1 = none
     int hoverBit = -1;                   // bit index 0..7 within the byte (0 = MSB)
@@ -89,6 +97,7 @@ class BitPlotForm : Form
     {
         Text = "BitPlot";
         MinimumSize = new Size(260, 180);
+        ClientSize = new Size(900, 620);   /* size after un-maximizing; same as the Linux default */
         WindowState = FormWindowState.Maximized;
         KeyPreview = true;
 
@@ -97,6 +106,8 @@ class BitPlotForm : Form
 
         header = new Panel { Dock = DockStyle.Top, BackColor = Color.White };
         header.Height = (int)Math.Ceiling(font.GetHeight()) + 12;
+        header.Controls.Add(zoomHint);
+        header.Resize += delegate { PositionZoomHint(); };
         header.Paint += Header_Paint;
 
         plot = new PlotPanel { Dock = DockStyle.Fill, BackColor = Color.White };
@@ -189,6 +200,7 @@ class BitPlotForm : Form
         switch (k)
         {
             case Keys.O: OpenFile(); return true;
+            case Keys.Escape: Close(); return true;
             case Keys.Oemplus:
             case Keys.Add: Zoom(2); return true;
             case Keys.OemMinus:
@@ -313,17 +325,23 @@ class BitPlotForm : Form
                 sf.LineAlignment = StringAlignment.Center;
 
                 long addr = hoverByte >= 0 ? hoverByte : (ScrollX / Stride) * Rows;
+                string text = string.Format("Address: {0} ({1:X}H)", addr, addr);
+                if (addr >= 0 && addr < data.Length)
+                    text += string.Format("   Data: {0:X2}H", data[addr]);
                 RectangleF left = new RectangleF(8f, 0f, header.Width * 0.5f, header.Height);
-                g.DrawString(string.Format("Address: {0} ({1:X}H)", addr, addr), font, Brushes.Black, left, sf);
-
-                string info = string.Format("[+][-] Zoom  -  {0}  -  {1} bytes", fileName, data.Length);
-                SizeF sz = g.MeasureString(info, font);
-                RectangleF right = new RectangleF(header.Width - sz.Width - 8f, 0f, sz.Width + 8f, header.Height);
-                g.DrawString(info, font, Brushes.DimGray, right, sf);
+                g.DrawString(text, font, Brushes.Black, left, sf);
             }
         }
         using (Pen p = new Pen(Color.LightGray))
             g.DrawLine(p, 0, header.Height - 1, header.Width, header.Height - 1);
+    }
+
+    void PositionZoomHint()
+    {
+        Size sz = TextRenderer.MeasureText(zoomHint.Text, font);
+        zoomHint.SetBounds(header.Width - sz.Width - 8,
+                           Math.Max(0, (header.Height - sz.Height) / 2),
+                           sz.Width, sz.Height);
     }
 
     void OnDragEnter(object sender, DragEventArgs e)
