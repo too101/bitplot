@@ -4,7 +4,7 @@
 
 A tiny Windows tool for finding bitmap fonts embedded inside programs, firmware and ROM dumps — or for eyeballing any raw binary data. Think of it as a hex dump drawn as pixels: structure and patterns (especially glyphs) jump out visually instead of hiding in a wall of hex numbers.
 
-![BitPlot rendering a raw 8×8 bitmap font file — the letters B I T P L O T emerge from the bytes](docs/screenshot.png)
+![BitPlot rendering THAI.COM — a classic DOS-era Thai bitmap font (20,377 bytes) — glyph columns line up with the byte columns](docs/screenshot.png)
 
 ## Download
 
@@ -29,9 +29,9 @@ Address: 0 (0H)
 
 ## Hunting embedded bitmap fonts
 
-Classic bitmap fonts (8×8 and 8×16 PC/BIOS fonts, game fonts, UI fonts baked into firmware) store **one glyph row per byte**, 8 pixels per byte. Plot such a file and the glyph rows line up with the byte columns — the letters become readable, like the screenshot above, which is a raw 56-byte dump of a hand-made 8×8 font spelling `BITPLOT`.
+Classic bitmap fonts (8×8 and 8×16 PC/BIOS fonts, game fonts, UI fonts baked into firmware) store **one glyph row per byte**, 8 pixels per byte. Plot such a file and the glyph rows line up with the byte columns — the letters become readable. The screenshot above is `THAI.COM`, a classic DOS-era Thai bitmap font: Latin letters, Thai glyphs and symbol tables all pop out of the raw bytes.
 
-![Hovering a point shows its file address](docs/screenshot-hover.png)
+![Hovering any point shows its file address in decimal and hex — here 2170 (87AH)](docs/screenshot-hover.png)
 
 Typical things to point it at:
 
@@ -82,7 +82,7 @@ C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /nologo /target:winexe /
 
 **BitPlot** คือเครื่องมือเล็กๆ บน Windows สำหรับเปิดไฟล์อะไรก็ได้มาแสดงเป็นบิตแมป — **1 byte = 8 จุด** โดยไบต์จะเรียงลงมาทีละแถว พอถึงล่างสุดของหน้าต่างจะไหลขึ้นไปเริ่มที่บนสุดของคอลัมน์ถัดไป (เว้นช่องว่าง 1 จุด) เหมือนตัวอักษรไหลลงคอลัมน์หนังสือพิมพ์
 
-จุดประสงค์หลักคือใช้**ตามหาฟอนต์ bitmap ที่ฝังอยู่ในโปรแกรม เฟิร์มแวร์ หรือไฟล์เกม** หรือใช้ดูไฟล์ bitmap font โดยตรง เพราะฟอนต์ยุคคลาสสิก (8×8, 8×16) เก็บแต่ละแถวของ glyph เป็น 1 byte = 8 พิกเซล พอ plot ออกมาตัวอักษรจะอ่านได้ทันทีตามในภาพตัวอย่าง
+จุดประสงค์หลักคือใช้**ตามหาฟอนต์ bitmap ที่ฝังอยู่ในโปรแกรม เฟิร์มแวร์ หรือไฟล์เกม** หรือใช้ดูไฟล์ bitmap font โดยตรง เพราะฟอนต์ยุคคลาสสิก (8×8, 8×16) เก็บแต่ละแถวของ glyph เป็น 1 byte = 8 พิกเซล พอ plot ออกมาตัวอักษรจะอ่านได้ทันทีตามในภาพตัวอย่าง (ไฟล์ `THAI.COM` ฟอนต์ไทยยุค DOS)
 
 - ดาวน์โหลดโปรแกรมสำเร็จรูปได้ที่หน้า [Releases](https://github.com/too101/bitplot/releases/latest) (ไฟล์เดียว พกพาสะดวก ไม่ต้องติดตั้งอะไร)
 - เอาเมาส์ชี้จุดไหนก็จะบอก **address ของ byte นั้น (ฐาน 10 และฐาน 16)** เช่น `Address: 1234 (4D2H)`
