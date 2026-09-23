@@ -346,6 +346,16 @@ int main(int argc, char **argv)
     if (argc > 1 && !load_file(argv[1]))
         snprintf(notice, sizeof notice, "Cannot open: %s", argv[1]);
 
+    /* request a maximized initial window (EWMH; minimal WMs may ignore this) */
+    {
+        Atom wm_state = XInternAtom(dpy, "_NET_WM_STATE", False);
+        Atom maxv = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+        Atom maxh = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+        Atom state[2] = { maxv, maxh };
+        XChangeProperty(dpy, win, wm_state, XA_ATOM, 32, PropModeReplace,
+                        (unsigned char *)state, 2);
+    }
+
     XMapWindow(dpy, win);
     make_back();
 
