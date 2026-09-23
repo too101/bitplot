@@ -70,7 +70,7 @@ Linux: press `O`, type a path, press `Enter`.
 
 Same plotting rules, same hover address readout:
 
-![BitPlot on Linux (X11) rendering font-demo.bin — the letters B I T P L O T](docs/screenshot-linux.png)
+![BitPlot on Linux (X11) rendering THAI.COM — Thai glyphs, Latin letters and symbols line up from the raw bytes](docs/screenshot-linux.png)
 
 ## Build
 
