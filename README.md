@@ -16,12 +16,12 @@ A tiny Windows & Linux tool for finding bitmap fonts embedded inside programs, f
 
 - Every byte becomes **8 points, most-significant bit on the left**. A `1` bit is a black square, a `0` bit is a faint dot — like `#` and `.` in a hex dump.
 - Bytes fill **downward**, one byte per row. When a column reaches the bottom of the window, plotting continues at the **top of the next byte-column**, leaving a 1-point gap between columns — like text flowing down newspaper columns.
-- Hover any point and the header shows the **file address of its byte** in decimal and hex: `Address: 1234 (4D2H)`.
+- Hover any point and the header shows the **file address of its byte** in decimal and hex plus the byte's value: `Address: 1234 (4D2H)   Data: 66H`.
 
 Example — a file containing `00 01 02 03 04` renders as:
 
 ```
-Address: 0 (0H)
+Address: 0 (0H)   Data: 00H
 ........
 .......#
 ......#.
@@ -64,6 +64,7 @@ Linux: press `O`, type a path, press `Enter`.
 | `+` / `-` (or `Ctrl` + mouse wheel) | zoom point size |
 | mouse wheel, `Left` / `Right` | scroll |
 | `Home` / `End` | jump to start / end (Linux) |
+| `Esc` | quit (`q` also works on Linux) |
 
 ### Linux
 
@@ -106,6 +107,6 @@ Building needs `gcc` and the X11 headers — Debian/Ubuntu: `sudo apt install bu
 จุดประสงค์หลักคือใช้**ตามหาฟอนต์ bitmap ที่ฝังอยู่ในโปรแกรม เฟิร์มแวร์ หรือไฟล์เกม** หรือใช้ดูไฟล์ bitmap font โดยตรง เพราะฟอนต์ยุคคลาสสิก (8×8, 8×16) เก็บแต่ละแถวของ glyph เป็น 1 byte = 8 พิกเซล พอ plot ออกมาตัวอักษรจะอ่านได้ทันทีตามในภาพตัวอย่าง (ไฟล์ `THAI.COM` ฟอนต์ไทยยุค DOS)
 
 - ดาวน์โหลดโปรแกรมสำเร็จรูปได้ที่หน้า [Releases](https://github.com/too101/bitplot/releases/latest) (ไฟล์เดียว พกพาสะดวก ไม่ต้องติดตั้งอะไร)
-- เอาเมาส์ชี้จุดไหนก็จะบอก **address ของ byte นั้น (ฐาน 10 และฐาน 16)** เช่น `Address: 1234 (4D2H)`
+- เอาเมาส์ชี้จุดไหนก็จะบอก **address ของ byte นั้น (ฐาน 10 และฐาน 16) พร้อมค่าของ byte** เช่น `Address: 1234 (4D2H)   Data: 66H`
 - `O` = เปิดไฟล์ (Windows ลากไฟล์มาทิ้งก็ได้, Linux กด `O` แล้วพิมพ์ path), `+` / `-` = ซูมขนาดจุด, ลูกกลิ้งเมาส์ = เลื่อนซ้ายขวา
 - มีสองเวอร์ชัน: Windows (C# WinForms ไฟล์เดียว) และ Linux (C + X11 ไฟล์เดียว) — ไม่มี dependency ให้ติดตั้งเพิ่ม วิธี build อยู่ในหัวข้อ Build

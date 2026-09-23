@@ -41,7 +41,7 @@ static u8 *data = NULL;
 static long long len = 0;
 static const char *fname = NULL;
 
-static int cell = 12;
+static int cell = 6;   /* Linux default: 3 zoom levels below the 12 px Windows default */
 static const int BITS = 8;
 static const int GAP = 1;
 static const int MIN_CELL = 4, MAX_CELL = 40;
@@ -214,9 +214,11 @@ static void redraw(void)
         XSetForeground(dpy, gc_back, col_black);
         XDrawString(dpy, back, gc_back, 8, ty, buf, (int)strlen(buf));
     } else if (data && len > 0) {
-        char buf[64];
+        char buf[96];
         long long addr = hover_byte >= 0 ? hover_byte : (scroll_x / st) * rw;
-        snprintf(buf, sizeof buf, "Address: %lld (%llXH)", addr, (unsigned long long)addr);
+        int n = snprintf(buf, sizeof buf, "Address: %lld (%llXH)", addr, (unsigned long long)addr);
+        if (addr >= 0 && addr < len)
+            snprintf(buf + n, sizeof buf - n, "   Data: %02XH", data[addr]);
         XSetForeground(dpy, gc_back, col_black);
         XDrawString(dpy, back, gc_back, 8, ty, buf, (int)strlen(buf));
         char right[1024];
