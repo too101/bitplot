@@ -54,6 +54,7 @@ static long long scroll_x = 0;
 static long long hover_byte = -1;
 static int hover_bit = -1;
 static int dragging = 0;
+static int lsb_first = 0;   /* 0 = MSB leftmost (normal), 1 = mirrored (LSB-first) font */
 
 static char path_buf[4096];
 static int path_len = 0;
@@ -178,8 +179,10 @@ static void redraw(void)
             for (long long b = fb; b < lb; b++) {
                 int y = hh + (int)(b - fb) * cell;
                 u8 v = data[b];
-                for (int bit = 0; bit < BITS; bit++)
-                    draw_point(x0 + bit * cell, y, (v >> (7 - bit)) & 1);
+                for (int bit = 0; bit < BITS; bit++) {
+                    int bi = lsb_first ? bit : 7 - bit;
+                    draw_point(x0 + bit * cell, y, (v >> bi) & 1);
+                }
             }
             if (hov_here && hover_bit >= 0) {
                 XSetForeground(dpy, gc_back, col_red);
@@ -221,8 +224,8 @@ static void redraw(void)
             snprintf(buf + n, sizeof buf - n, "   Data: %02XH", data[addr]);
         XSetForeground(dpy, gc_back, col_black);
         XDrawString(dpy, back, gc_back, 8, ty, buf, (int)strlen(buf));
-        char right[1024];
-        snprintf(right, sizeof right, "[+][-] Zoom  -  %s  -  %lld bytes", fname ? fname : "", len);
+        char right[64];
+        snprintf(right, sizeof right, "[+][-] Zoom   [B] %s", lsb_first ? "LSB" : "MSB");
         draw_string_right(back, ty, right, col_gray);
     } else {
         XSetForeground(dpy, gc_back, col_black);
@@ -455,6 +458,10 @@ int main(int argc, char **argv)
                     break;
                 case XK_End:
                     scroll_x = max_scroll();
+                    redraw();
+                    break;
+                case XK_b: case XK_B:
+                    lsb_first = !lsb_first;
                     redraw();
                     break;
                 case XK_Escape: case XK_q: case XK_Q:

@@ -62,7 +62,7 @@ class BitPlotForm : Form
     readonly HScrollBar hBar;
     readonly Label zoomHint = new Label
     {
-        Text = "[+][-] Zoom",
+        Text = "[+][-] Zoom   [B] MSB",
         ForeColor = Color.DimGray,
         BackColor = Color.White,
         AutoSize = true,
@@ -71,6 +71,7 @@ class BitPlotForm : Form
 
     long hoverByte = -1;                 // file offset of hovered byte, -1 = none
     int hoverBit = -1;                   // bit index 0..7 within the byte (0 = MSB)
+    bool lsbFirst = false;               // false = MSB leftmost (normal), true = mirrored font
 
     long Rows
     {
@@ -201,6 +202,12 @@ class BitPlotForm : Form
         {
             case Keys.O: OpenFile(); return true;
             case Keys.Escape: Close(); return true;
+            case Keys.B:
+                lsbFirst = !lsbFirst;
+                zoomHint.Text = "[+][-] Zoom   [B] " + (lsbFirst ? "LSB" : "MSB");
+                PositionZoomHint();
+                plot.Invalidate();
+                return true;
             case Keys.Oemplus:
             case Keys.Add: Zoom(2); return true;
             case Keys.OemMinus:
@@ -288,7 +295,8 @@ class BitPlotForm : Form
                 for (int bit = 0; bit < BitsPerByte; bit++)
                 {
                     float x = x0 + bit * cell;
-                    if (((v >> (7 - bit)) & 1) != 0)
+                    int bitIndex = lsbFirst ? bit : 7 - bit;
+                    if (((v >> bitIndex) & 1) != 0)
                         g.FillRectangle(setBrush, x, y, pointW, pointW);
                     else
                         g.FillRectangle(unsetBrush, x, y, unsetSize, unsetSize);

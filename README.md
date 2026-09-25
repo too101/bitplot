@@ -33,8 +33,6 @@ Address: 0 (0H)   Data: 00H
 
 Classic bitmap fonts (8×8 and 8×16 PC/BIOS fonts, game fonts, UI fonts baked into firmware) store **one glyph row per byte**, 8 pixels per byte. Plot such a file and the glyph rows line up with the byte columns — the letters become readable. The screenshot above is `THAI.COM`, a classic DOS-era Thai bitmap font: Latin letters, Thai glyphs and symbol tables all pop out of the raw bytes.
 
-![Hovering any point shows its file address in decimal and hex — here 2170 (87AH)](docs/screenshot-hover.png)
-
 Typical things to point it at:
 
 - firmware / ROM dumps and flash images
@@ -45,6 +43,7 @@ Typical things to point it at:
 Tips:
 
 - Zoom with `+` / `-` until the column height is a **multiple of the glyph height** (8 or 16 rows), so every glyph starts at the top of a column and stays aligned.
+- Some font versions store each row LSB-first, so every glyph looks mirrored. Press `B` to flip the bit order (MSB ⇄ LSB).
 - Use the hover address readout to note where a font starts, then extract it at that offset.
 - Files wider than the window scroll horizontally; the window can be resized freely (rows per column follow the window height).
 
@@ -64,13 +63,14 @@ Linux: press `O`, type a path, press `Enter`.
 | `+` / `-` (or `Ctrl` + mouse wheel) | zoom point size |
 | mouse wheel, `Left` / `Right` | scroll |
 | `Home` / `End` | jump to start / end (Linux) |
+| `B` | flip bit order MSB ⇄ LSB (fixes mirrored glyphs) |
 | `Esc` | quit (`q` also works on Linux) |
 
 ### Linux
 
 Same plotting rules, same hover address readout:
 
-![BitPlot on Linux (X11) rendering THAI.COM — Thai glyphs, Latin letters and symbols line up from the raw bytes](docs/screenshot-linux.png)
+![BitPlot on Linux (X11): Q10GGS_TH.bin reads correctly after pressing B to flip its mirrored (LSB-first) rows to MSB](docs/screenshot-linux.png)
 
 ## Build
 
@@ -109,4 +109,5 @@ Building needs `gcc` and the X11 headers — Debian/Ubuntu: `sudo apt install bu
 - ดาวน์โหลดโปรแกรมสำเร็จรูปได้ที่หน้า [Releases](https://github.com/too101/bitplot/releases/latest) (ไฟล์เดียว พกพาสะดวก ไม่ต้องติดตั้งอะไร)
 - เอาเมาส์ชี้จุดไหนก็จะบอก **address ของ byte นั้น (ฐาน 10 และฐาน 16) พร้อมค่าของ byte** เช่น `Address: 1234 (4D2H)   Data: 66H`
 - `O` = เปิดไฟล์ (Windows ลากไฟล์มาทิ้งก็ได้, Linux กด `O` แล้วพิมพ์ path), `+` / `-` = ซูมขนาดจุด, ลูกกลิ้งเมาส์ = เลื่อนซ้ายขวา
+- ฟอนต์บางรุ่นเก็บบิตกลับซ้ายขวา (LSB-first) ทำให้ตัวอักษรกลับด้าน — กด `B` เพื่อสลับ MSB ⇄ LSB
 - มีสองเวอร์ชัน: Windows (C# WinForms ไฟล์เดียว) และ Linux (C + X11 ไฟล์เดียว) — ไม่มี dependency ให้ติดตั้งเพิ่ม วิธี build อยู่ในหัวข้อ Build
